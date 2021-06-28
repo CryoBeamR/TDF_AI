@@ -21,6 +21,10 @@ public class Board {
         this.board = board;
     }
 
+    public int[][] getBoard() {
+        return board;
+    }
+
     /**
      * Move the deplacement card (-1) from (init_x,init_y) to the position
      * (x,y).
@@ -233,8 +237,8 @@ public class Board {
         System.arraycopy(moves_x,0,moves,0,moves_x[5][0]);
         System.arraycopy(moves_y,0,moves,moves_x[5][0],moves_y[5][0]);
         int numberMoves = moves_x[5][0] + moves_y[5][0];
-        moves[10][0] = numberMoves;
-        moves[numberMoves][0] = moves[10][0] < 10 ? -1 : moves[numberMoves][0];
+
+        moves[numberMoves][0] = -1;
         return moves;
     }
 
@@ -252,6 +256,43 @@ public class Board {
             boardCopy[i++] = rowCopy;
         }
         return boardCopy;
+    }
+    public String toString(Pocket pocket){
+        int[][] hand = pocket.hand;
+        String space = "        ";
+        String board = "+-----------------------------------------------------------------------+\n";
+        board += "|      Board                         Pocket Hand              Shield    |\n";
+        board += "+-----------------------------------------------------------------------+\n";
+        board += "+-------------------+"+space+"8 | ";
+        for(int i = 1; i <= 8; i++){
+            board += String.format("%-3.3s", hand[6][i]);
+        }
+        board += "|"+space;
+        if(hand[6][9] == 1)
+            board += "✓\n";
+        else
+            board+="×\n";
+
+        for(int i = 0; i < 6; i++){
+            board += "| ";
+            for(int j = 0; j < 6; j++){
+                board += String.format("%-3.3s", this.board[i][j]);
+            }
+            board +="|"+space+(7-i)+" | ";
+            for(int j = 1; j <= (7-i); j++){
+                board += String.format("%-3.3s", hand[5-i][j]);
+            }
+            board +="|";
+            int c_space = 13+(i*3);
+            if(hand[5-i][9-i] == 1)
+                board += board += String.format("%"+c_space+".3s", "✓\n");
+            else
+                board+=String.format("%"+c_space+".3s", "×\n");;
+        }
+        board += "+-------------------+"+space;
+
+
+        return board;
     }
 
 

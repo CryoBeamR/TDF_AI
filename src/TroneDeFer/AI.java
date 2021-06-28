@@ -6,7 +6,7 @@ public class AI {
     long finish ;
     long timeElapsed ;
     final long MAXTIME = 459999999000l;
-    int depth = 15;
+    int depth = 11;
 
     public AI(int[][] board) {
         this.board = new Board();
