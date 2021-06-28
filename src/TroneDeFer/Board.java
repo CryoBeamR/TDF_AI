@@ -259,40 +259,60 @@ public class Board {
     }
     public String toString(Pocket pocket){
         int[][] hand = pocket.hand;
+        final String ANSI_RESET = "\u001B[0m";
+        final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
+        final String PURPLE_BACKGROUND_BRIGHT = "\033[0;105m"; // PURPLE
+        final String BLACK_BOLD_BRIGHT = "\033[1;90m"; // BLACK
+        String[] colorHousePktOrderBG = {"\033[0;100m","\033[41m","\033[40m","\033[43m","\033[42m","\033[41m"};
+        String[] colorHousePktOrderF = {"\033[1;93m","\033[1;93m","\033[1;91m","\033[1;90m","\033[1;93m","\033[1;96m"};
+        String[] colorHouseBoardOrderUn = {"\033[41m","\033[42m","\033[43m","\033[40m","\033[41m","\033[1;100m","\033[47m"};
+        String[] colorHouseBoardOrderF = {"\033[1;96m","\033[1;93m","\033[1;90m","\033[1;91m","\033[1;93m","\033[1;93m","\033[1;90m"};
         String space = "        ";
-        String board = "+-----------------------------------------------------------------------+\n";
-        board += "|      Board                         Pocket Hand              Shield    |\n";
-        board += "+-----------------------------------------------------------------------+\n";
-        board += "+-------------------+"+space+"8 | ";
+        StringBuilder board = new StringBuilder("+-----------------------------------------------------------------------+\n");
+        board.append("|      Board                         Pocket Hand              Shield    |\n");
+        board.append("+-----------------------------------------------------------------------+\n");
+        board.append("+-------------------+").append(space).append(ANSI_WHITE_BACKGROUND).append("\033[1;90m").append(" 8 ").append(ANSI_RESET).append(" | ");
         for(int i = 1; i <= 8; i++){
-            board += String.format("%-3.3s", hand[6][i]);
+            board.append(String.format("%-3.3s", hand[6][i]));
         }
-        board += "|"+space;
+        board.append("|").append(space);
         if(hand[6][9] == 1)
-            board += "✓\n";
+            board.append("✓\n");
         else
-            board+="×\n";
+            board.append("×\n");
 
         for(int i = 0; i < 6; i++){
-            board += "| ";
+            board.append("| ");
             for(int j = 0; j < 6; j++){
-                board += String.format("%-3.3s", this.board[i][j]);
+                int card = this.board[i][j];
+                if(card == -1 || card == 0){
+                    if(card == -1) {
+                        board.append(PURPLE_BACKGROUND_BRIGHT + BLACK_BOLD_BRIGHT).append(String.format("%-3.3s", this.board[i][j])).append(ANSI_RESET);
+                    }
+                    else{
+                        board.append(String.format("%-3.3s", " "));
+                    }
+                }
+                else{
+                    int house =findHouse(card,8,35);
+                    board.append(colorHouseBoardOrderUn[house - 2]).append(colorHouseBoardOrderF[house - 2]).append(String.format("%-3.3s", this.board[i][j])).append(ANSI_RESET);
+                }
             }
-            board +="|"+space+(7-i)+" | ";
+            board.append("|").append(space).append(colorHousePktOrderBG[i]).append(colorHousePktOrderF[i]).append(" ").append(7 - i).append(" ").append(ANSI_RESET).append(" | ");
             for(int j = 1; j <= (7-i); j++){
-                board += String.format("%-3.3s", hand[5-i][j]);
+                board.append(String.format("%-3.3s", hand[5 - i][j]));
             }
-            board +="|";
+            board.append("|");
             int c_space = 13+(i*3);
             if(hand[5-i][9-i] == 1)
-                board += board += String.format("%"+c_space+".3s", "✓\n");
+                board.append(board.append(String.format("%" + c_space + ".3s", "✓\n")));
             else
-                board+=String.format("%"+c_space+".3s", "×\n");;
+                board.append(String.format("%" + c_space + ".3s", "×\n"));;
         }
-        board += "+-------------------+"+space;
+        board.append("+-------------------+\n");
 
 
-        return board;
+        return board.toString();
     }
 
 
