@@ -47,14 +47,68 @@ public class Main {
         Pocket pocket = new Pocket();
         pocket.initiatePocketSpace();
         double randDouble =  Math.random()*2 ;
-        int randIntX = 1;
-        if(randIntX == 1){
+        int coinSide = (int) randDouble;
+        if(coinSide == 1){
             System.out.println("Computer will start.");
-            int[] move = ai.bestMove(moveCard[0],moveCard[1]);
-            ai.board.moveCard(moveCard[0],moveCard[1],move[0],move[1],ai.board.getBoard(),pocket,false);
         }
-        String board = ai.board.toString(pocket);
-        System.out.print(board);
+        int[][] moves = ai.board.moves(ai.board.getBoard(),moveCard[0],moveCard[1],1);
+        // false if it's human turn and true if it's computer turn
+        boolean turn = coinSide != 1;
+        while(moves[11][0] != 0){
+            if(turn) {
+                System.out.println("----- Human turn ;) ----- ");
+                Scanner scn = new Scanner(System.in);  // Create a Scanner object
+                String SBoard = ai.board.toString(pocket);
+                System.out.print(SBoard);
+                System.out.println("\nChoose your move:");
+                int decimalLetter = 65;
+                int i = 0;
+                for (int[] move : moves) {
+                    if (move[0] == -1) {
+                        break;
+                    }
+                    char letterMaj = (char) (decimalLetter + i++);
+                    System.out.print(letterMaj + " : {" + move[0] + "," + move[1] + "}  ");
+                }
+                System.out.print("----> ");
+                int chooseMove = scn.nextLine().trim().toUpperCase().charAt(0);
+                int posMove = chooseMove - decimalLetter;
+                ai.board.moveCard(moveCard[0], moveCard[1], moves[posMove][0], moves[posMove][1], ai.board.getBoard(), pocket, true);
+                moveCard[0] = moves[posMove][0];
+                moveCard[1] = moves[posMove][1];
+                String board = ai.board.toString(pocket);
+                System.out.print(board);
+            }
+            else{
+                System.out.println("----- Computer turn :$ ----- ");
+                int[] move = ai.bestMove(moveCard[0],moveCard[1],pocket);
+                ai.board.moveCard(moveCard[0],moveCard[1],move[0],move[1],ai.board.getBoard(),pocket,false);
+                moveCard[0] = move[0];
+                moveCard[1] = move[1];
+            }
+            turn = !turn;
+            moves = ai.board.moves(ai.board.getBoard(),moveCard[0],moveCard[1],1);
+        }
+        int shieldWon = 0;
+        for(int[] house : pocket.hand){
+            int shieldPos = house.length -1;
+
+            if(house[shieldPos] == 1){
+                shieldWon++;
+            }
+
+        }
+        if(shieldWon >= 4){
+            String board = ai.board.toString(pocket);
+            System.out.print(board);
+            System.out.println(" Computer Won ... try harder next time HA HA HA ;)");
+        }
+        else{
+            String board = ai.board.toString(pocket);
+            System.out.print(board);
+            System.out.println(" YEaaaaH Human Won !!!!");
+        }
+
 
     }
 

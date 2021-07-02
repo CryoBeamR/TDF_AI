@@ -68,12 +68,19 @@ public class Board {
         while( pos_x != x || pos_y != y){
             pos_x += vect_x;
             pos_y += vect_y;
-
+            //to remove !! was trying to catch a bug
+            if(pos_x == -1 || pos_y == -1){
+                break;
+            }
             int card = board[pos_y][pos_x];
             int house =  findHouse(card,MAXHOUSE,MAXCARD);
             if(targetHouse == house && !oponentTurn){
                 // add to pocket if it's the AI turn
                 int cardPocketIndex =  findCardPosPocket(card,MAXHOUSE,MAXCARD);
+                //to remove !! was trying to catch a bug
+                if(house-OFFSETS == -1 || cardPocketIndex+1 == -1){
+                    break;
+                }
                 pocket.hand[house-OFFSETS][cardPocketIndex+1] = card;
                 pocket.hand[house-OFFSETS][house+1] +=1;
                 board[pos_y][pos_x]= 0;
@@ -83,7 +90,7 @@ public class Board {
                     companions -= 1;
                 }
                 int cardAvailability = pocket.availableCard[house-OFFSETS] == -1 ? 0 : pocket.availableCard[house-OFFSETS];
-                if(pocket.hand[house-OFFSETS][house+1] > (house - cardAvailability - pocket.hand[house-OFFSETS][house+1]) ) {
+                if(pocket.hand[house-OFFSETS][house+1] >= (house - cardAvailability - pocket.hand[house-OFFSETS][house+1]) ) {
                     pocket.hand[house-OFFSETS][house+2] = 1;
                 }
             }
@@ -91,7 +98,7 @@ public class Board {
                 board[pos_y][pos_x]= 0;
                 pocket.availableCard[house-OFFSETS] -= 1;
                 int cardAvailability = pocket.availableCard[house-OFFSETS] == -1 ? 0 : pocket.availableCard[house-OFFSETS];
-                if(pocket.hand[house-OFFSETS][house+1] < (house - cardAvailability - pocket.hand[house-OFFSETS][house+1])) {
+                if(pocket.hand[house-OFFSETS][house+1] <= (house - cardAvailability - pocket.hand[house-OFFSETS][house+1])) {
                     pocket.hand[house-OFFSETS][house+2] = 0;
                 }
             }
@@ -233,12 +240,17 @@ public class Board {
     public int[][] moves(int[][] board, int x, int y,int direction){
         int[][] moves_x = moves_x(board,x,y,direction);
         int[][] moves_y = moves_y(board,x,y,direction);
-        int[][] moves = new int[11][2];
+        // moves[10][1] is 1 = shield and 0 = no shield
+        // moves[11][1] nb of moves in the array
+        int[][] moves = new int[12][2];
         System.arraycopy(moves_x,0,moves,0,moves_x[5][0]);
         System.arraycopy(moves_y,0,moves,moves_x[5][0],moves_y[5][0]);
         int numberMoves = moves_x[5][0] + moves_y[5][0];
-
-        moves[numberMoves][0] = -1;
+        moves[11][0] = numberMoves;
+        for (int i = numberMoves; i < 10; i++ ){
+            // -1 at x position for empty moves space in the array
+            moves[i][0] = -1;
+        }
         return moves;
     }
 
@@ -268,21 +280,26 @@ public class Board {
         String[] colorHouseBoardOrderUn = {"\033[41m","\033[42m","\033[43m","\033[40m","\033[41m","\033[1;100m","\033[47m"};
         String[] colorHouseBoardOrderF = {"\033[1;96m","\033[1;93m","\033[1;90m","\033[1;91m","\033[1;93m","\033[1;93m","\033[1;90m"};
         String space = "        ";
-        StringBuilder board = new StringBuilder("+-----------------------------------------------------------------------+\n");
-        board.append("|      Board                         Pocket Hand              Shield    |\n");
-        board.append("+-----------------------------------------------------------------------+\n");
-        board.append("+-------------------+").append(space).append(ANSI_WHITE_BACKGROUND).append("\033[1;90m").append(" 8 ").append(ANSI_RESET).append(" | ");
+        StringBuilder board = new StringBuilder("+---------------------------------------------------------------------------+\n");
+        board.append("|      Board                         Pocket Hand                  Shield    |\n");
+        board.append("+---------------------------------------------------------------------------+\n");
+        board.append("   0  1  2  3  4  5  ").append(space).append(ANSI_WHITE_BACKGROUND).append("\033[1;90m").append(" 8 ").append(ANSI_RESET).append(" | ");
+
         for(int i = 1; i <= 8; i++){
-            board.append(String.format("%-3.3s", hand[6][i]));
+            if(hand[6][i] > 0){
+                board.append(String.format("%-3.3s", hand[6][i]));
+            }
+            else{
+                board.append(String.format("%-3.3s", "_"));
+            }
         }
         board.append("|").append(space);
-        if(hand[6][9] == 1)
+        if(hand[6][10] == 1)
             board.append("✓\n");
         else
             board.append("×\n");
-
         for(int i = 0; i < 6; i++){
-            board.append("| ");
+            board.append(i+" ");
             for(int j = 0; j < 6; j++){
                 int card = this.board[i][j];
                 if(card == -1 || card == 0){
@@ -298,9 +315,14 @@ public class Board {
                     board.append(colorHouseBoardOrderUn[house - 2]).append(colorHouseBoardOrderF[house - 2]).append(String.format("%-3.3s", this.board[i][j])).append(ANSI_RESET);
                 }
             }
-            board.append("|").append(space).append(colorHousePktOrderBG[i]).append(colorHousePktOrderF[i]).append(" ").append(7 - i).append(" ").append(ANSI_RESET).append(" | ");
+            board.append(" ").append(space).append(colorHousePktOrderBG[i]).append(colorHousePktOrderF[i]).append(" ").append(7 - i).append(" ").append(ANSI_RESET).append(" | ");
             for(int j = 1; j <= (7-i); j++){
-                board.append(String.format("%-3.3s", hand[5 - i][j]));
+                if(hand[5 - i][j] > 0){
+                    board.append(String.format("%-3.3s", hand[5 - i][j]));
+                }
+                else{
+                    board.append(String.format("%-3.3s", "_"));
+                }
             }
             board.append("|");
             int c_space = 13+(i*3);
@@ -309,18 +331,10 @@ public class Board {
             else
                 board.append(String.format("%" + c_space + ".3s", "×\n"));;
         }
-        board.append("+-------------------+\n");
+
 
 
         return board.toString();
     }
-
-
-
-
-
-
-
-
 
 }
