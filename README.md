@@ -7,6 +7,9 @@ Experiment with the minmax algorithm with the goal to create an AI that can play
 
 This is a java program that try to recreate the "La main dur roi" on a console. This game have every aspect of the table game regarding the deplacement of the cards and  calculation of state of the game. The only thing  missing in this version is the aspect of luck procure by the selection of one random attribute card when the last card of a House  as been picked up.
 
+## Rules
+coming ...
+
 ## Getting Started
 
 ### Dependencies
