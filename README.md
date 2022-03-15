@@ -31,19 +31,19 @@ This is a java program that try to recreate the "La main dur roi" on a console. 
     ![image](https://user-images.githubusercontent.com/65687404/158408690-3195699f-387e-47d5-9e72-6b2512020ce1.png)
 
 ### Executing program
- #### src
- Execute Main directly with the Intellij interface
- ![image](https://user-images.githubusercontent.com/65687404/158413567-a18947aa-c285-4308-85c4-ff51a43746c4.png)
+ * src :
+    - Execute Main directly with the Intellij interface
+  
+    ![image](https://user-images.githubusercontent.com/65687404/158415407-854d32fb-60f1-4792-9d62-813df7abf220.png)
 
- #### test
- Execute ```*.java``` in /test package directly with the Intellij interface
- ![image](https://user-images.githubusercontent.com/65687404/158414009-7f50382e-940f-481b-861e-b77cd2c2c15e.png)
+ * test :
+    - Execute ```*.java``` in /test package directly with the Intellij interface
+  
+    ![image](https://user-images.githubusercontent.com/65687404/158414009-7f50382e-940f-481b-861e-b77cd2c2c15e.png)
 
 
 
 ## Authors
-
-Contributors names and contact info
 
 Roodney Aladin  
 
