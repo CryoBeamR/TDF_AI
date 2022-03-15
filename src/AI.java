@@ -1,5 +1,3 @@
-package TroneDeFer;
-
 public class AI {
     Board board;
     long start;
@@ -32,7 +30,7 @@ public class AI {
                 break;
             }
             int [][] board = this.board.moveCard(x,y,move[0],move[1],this.board.deepCopyBoard(),tempPocket,false);
-            double score = minMax(board,pocket.hand,pocket.availableCard,depth,-10000,10000,false,move[0],move[1]);
+            double score = minMax(board,pocket.hand,pocket.availableCard,depth,-10000,10000,false,move[0],move[1], 1);
             if (score > maxScore){
                 maxScore = score;
                 bestMove[0] = move[0];
@@ -48,7 +46,7 @@ public class AI {
         return bestMove;
     }
 
-    public double minMax(int[][] board,int[][] pocket,int[] availableCard, int depth , double alpha, double beta, boolean isMax, int x, int y) {
+    public double minMax(int[][] board,int[][] pocket,int[] availableCard, int depth , double alpha, double beta, boolean isMax, int x, int y, int currentDepth) {
         double maxEval = -10000;
         double minEval = 10000;
         finish = System.nanoTime();
@@ -62,7 +60,7 @@ public class AI {
         }
         if (depth == 0) {
             int[][] moves = this.board.moves(board,x,y,1);
-            return this.evaluation(board, pocket, availableCard, moves);
+            return this.evaluation(board, pocket, availableCard, moves, currentDepth);
         }
         if (isMax) {
             int[][] moves = this.board.moves(board,x,y,1);
@@ -73,7 +71,7 @@ public class AI {
                     break;
                 }
                 int[][] tempBoard = this.board.moveCard(x,y,move[0],move[1],boardCopy,pkt,false);
-                double eval = minMax(tempBoard, pkt.hand, pkt.availableCard, depth - 1, alpha, beta, false,move[0],move[1]);
+                double eval = minMax(tempBoard, pkt.hand, pkt.availableCard, depth - 1, alpha, beta, false,move[0],move[1], currentDepth + 1);
                 if (timeElapsed > MAXTIME) {
                     return eval;
                 }
@@ -84,7 +82,7 @@ public class AI {
                 }
             }
             if(moves[11][0] == 0){
-                return this.evaluation(board, pocket, availableCard, moves);
+                return this.evaluation(board, pocket, availableCard, moves, currentDepth);
             }
             return maxEval;
         } else {
@@ -97,7 +95,7 @@ public class AI {
                     break;
                 }
                 int[][] tempBoard = this.board.moveCard(x,y,move[0],move[1],boardCopy,pkt,true);
-                double eval = minMax(tempBoard, pkt.hand, pkt.availableCard, depth - 1, alpha, beta, true,move[0],move[1]);
+                double eval = minMax(tempBoard, pkt.hand, pkt.availableCard, depth - 1, alpha, beta, true,move[0],move[1],currentDepth + 1);
                 if (timeElapsed > MAXTIME) {
                     return eval;
                 }
@@ -108,7 +106,7 @@ public class AI {
                 }
             }
             if(moves[11][0] == 0){
-                return this.evaluation(board, pocket, availableCard, moves);
+                return this.evaluation(board, pocket, availableCard, moves, currentDepth);
             }
             return minEval;
         }
@@ -119,49 +117,62 @@ public class AI {
      *
      * @param board the board that need a evaluation
      * @param pocket all the house member held by the AI
+     * @param availableCard  number of card available per house
+     * @param moves list of all move possible
+     * @param numMove  number of move played to this point
      * @return A score between 10000 and -10000
      */
-    public double evaluation(int[][] board, int[][] pocket, int[] availableCard, int[][] moves){
+    public double evaluation(int[][] board, int[][] pocket, int[] availableCard, int[][] moves, int numMove){
         final double K = (481d/280d);
-        final int MAXSCORE = 1000;
+        final int MAXSCORE = 10000;
 
         double score = 0;
         int numberShield = 0;
         int house = 2;
+
         for(int[] houseHand : pocket){
-            int cardAvailability = availableCard[house - 2] == -1 ? 0 : availableCard[house - 2];
-            if((float)(cardAvailability + houseHand[house + 1 ])/house > 0.50f || houseHand[house + 2] == 1 ){
-                if((houseHand[house + 1 ] / house) > 0.50){
+            int nbCardHousePocket = house + 1;
+            int badge = house + 2;
+            int housePos = house - 2;
+            if (houseHand[badge] == 1){
+                score += MAXSCORE/8;
+            }
+            /*int cardAvailability = availableCard[housePos] == -1 ? 0 : availableCard[housePos];
+            if((float)(cardAvailability + houseHand[nbCardHousePocket])/house > 0.50f || houseHand[badge] == 1 ){
+                if((houseHand[nbCardHousePocket] / house) > 0.50){
                     score += ((MAXSCORE * 0.75)/8 );
                 }
                 else{
-                    for( int i = 1; i <= houseHand[house + 1 ]; i++ ){
+                    *//*for( int i = 1; i <= houseHand[nbCardHousePocket]; i++ ){
                         score += (((MAXSCORE/4) * 0.75)/(8 * house));
                         //score += ((MAXSCORE * 0.75)/(house * K))/house;
-                    }
+                    }*//*
+                    score += houseHand[nbCardHousePocket] * ((MAXSCORE * 0.125)/(7 * house));
                 }
             }
             else{
                 score -= ((MAXSCORE * 0.75)/8 );
             }
-            if(availableCard[house-2] == -1){
+           *//* if(availableCard[house-2] == -1){
                 //score += ((MAXSCORE * 0.25)/8);
                 //score += ((MAXSCORE * 0.75)/(house * K))/(house*8);
-            }
-            if(houseHand[house + 2] == 1 ){
-                numberShield++;
-            }
+            }*//*
+            if(houseHand[badge] == 1 ){
+                numberShield++;*/
+            //}
             house++;
 
         }
-        if(moves[11][0] == 0){
+        /*if(moves[11][0] == 0){
             if (numberShield >= 4){
-                score = 10000;
+                score = MAXSCORE * 0.75;
+                score += (MAXSCORE * 0.125)/numMove;
             }
             else{
-                score = -10000;
+                score = -MAXSCORE * 0.75;
+                score -= (MAXSCORE * 0.125)/numMove;
             }
-        }
+        }*/
 
         //score  += (MAXSCORE * 0.15625)/((10 - numberShield) * K);
 

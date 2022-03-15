@@ -1,5 +1,3 @@
-package TroneDeFer;
-
 public class Board {
     // board of n x n size
     public final int SIZE = 6;
@@ -64,6 +62,7 @@ public class Board {
         final int MAXCARD = 35;
         int targetCard = board[y][x];
         int targetHouse = findHouse(targetCard,MAXHOUSE,MAXCARD);
+        // this offset is use to find the position of house in the a array
         final int OFFSETS = 2;
         while( pos_x != x || pos_y != y){
             pos_x += vect_x;
@@ -73,33 +72,29 @@ public class Board {
                 break;
             }
             int card = board[pos_y][pos_x];
-            int house =  findHouse(card,MAXHOUSE,MAXCARD);
-            if(targetHouse == house && !oponentTurn){
+            int cardHouse =  findHouse(card,MAXHOUSE,MAXCARD);
+            if(targetHouse == cardHouse && !oponentTurn){
                 // add to pocket if it's the AI turn
                 int cardPocketIndex =  findCardPosPocket(card,MAXHOUSE,MAXCARD);
-                //to remove !! was trying to catch a bug
-                if(house-OFFSETS == -1 || cardPocketIndex+1 == -1){
-                    break;
-                }
-                pocket.hand[house-OFFSETS][cardPocketIndex+1] = card;
-                pocket.hand[house-OFFSETS][house+1] +=1;
+                pocket.hand[cardHouse-OFFSETS][cardPocketIndex+1] = card;
+                pocket.hand[cardHouse-OFFSETS][cardHouse+1] +=1;
                 board[pos_y][pos_x]= 0;
-                pocket.availableCard[house-OFFSETS] -= 1;
-                if (pocket.availableCard[house-OFFSETS] == 0 && companions != 0){
-                    pocket.availableCard[house-OFFSETS] = -1;
+                pocket.availableCard[cardHouse-OFFSETS] -= 1;
+                if (pocket.availableCard[cardHouse-OFFSETS] == 0 && companions != 0){
+                    pocket.availableCard[cardHouse-OFFSETS] = -1;
                     companions -= 1;
                 }
-                int cardAvailability = pocket.availableCard[house-OFFSETS] == -1 ? 0 : pocket.availableCard[house-OFFSETS];
-                if(pocket.hand[house-OFFSETS][house+1] >= (house - cardAvailability - pocket.hand[house-OFFSETS][house+1]) ) {
-                    pocket.hand[house-OFFSETS][house+2] = 1;
+                int cardAvailability = pocket.availableCard[cardHouse-OFFSETS] == -1 ? 0 : pocket.availableCard[cardHouse-OFFSETS];
+                if(pocket.hand[cardHouse-OFFSETS][cardHouse+1] >= (cardHouse - cardAvailability - pocket.hand[cardHouse-OFFSETS][cardHouse+1]) ) {
+                    pocket.hand[cardHouse-OFFSETS][cardHouse+2] = 1;
                 }
             }
-            else if(targetHouse == house){
+            else if(targetHouse == cardHouse){
                 board[pos_y][pos_x]= 0;
-                pocket.availableCard[house-OFFSETS] -= 1;
-                int cardAvailability = pocket.availableCard[house-OFFSETS] == -1 ? 0 : pocket.availableCard[house-OFFSETS];
-                if(pocket.hand[house-OFFSETS][house+1] <= (house - cardAvailability - pocket.hand[house-OFFSETS][house+1])) {
-                    pocket.hand[house-OFFSETS][house+2] = 0;
+                pocket.availableCard[cardHouse-OFFSETS] -= 1;
+                int cardAvailability = pocket.availableCard[cardHouse-OFFSETS] == -1 ? 0 : pocket.availableCard[cardHouse-OFFSETS];
+                if(pocket.hand[cardHouse-OFFSETS][cardHouse+1] <= (cardHouse - cardAvailability - pocket.hand[cardHouse-OFFSETS][cardHouse+1])) {
+                    pocket.hand[cardHouse-OFFSETS][cardHouse+2] = 0;
                 }
             }
         }
@@ -269,6 +264,7 @@ public class Board {
         }
         return boardCopy;
     }
+
     public String toString(Pocket pocket){
         int[][] hand = pocket.hand;
         final String ANSI_RESET = "\u001B[0m";
