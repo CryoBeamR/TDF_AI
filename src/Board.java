@@ -2,7 +2,11 @@ public class Board {
     // board of n x n size
     public final int SIZE = 6;
     private int[][] board = new int[SIZE][SIZE];
-    private int companions = 6;
+    private int COMPANIONS = 6;
+    private int HOUSESIZE = 8;
+    //exclude the moving card ( identified by -1 )
+    private int CARDSIZE = 35;
+    private int[] CARDMATCHHOUSE = {2,2,3,3,3,4,4,4,4,5,5,5,5,5,6,6,6,6,6,6,7,7,7,7,7,7,7,8,8,8,8,8,8,8,8};
 
 
     public int[][] deepCopyBoard(){
@@ -58,10 +62,8 @@ public class Board {
         int signe =  ((x - init_x) + (y - init_y))/Math.abs((x - init_x) + (y - init_y));
         int vect_x = init_x != x ? signe : 0;
         int vect_y = init_y != y ? signe : 0;
-        final int MAXHOUSE = 8;
-        final int MAXCARD = 35;
         int targetCard = board[y][x];
-        int targetHouse = findHouse(targetCard,MAXHOUSE,MAXCARD);
+        int targetHouse = findHouse(targetCard);
         // this offset is use to find the position of house in the a array
         final int OFFSETS = 2;
         while( pos_x != x || pos_y != y){
@@ -72,17 +74,17 @@ public class Board {
                 break;
             }
             int card = board[pos_y][pos_x];
-            int cardHouse =  findHouse(card,MAXHOUSE,MAXCARD);
+            int cardHouse =  findHouse(card);
             if(targetHouse == cardHouse && !oponentTurn){
                 // add to pocket if it's the AI turn
-                int cardPocketIndex =  findCardPosPocket(card,MAXHOUSE,MAXCARD);
+                int cardPocketIndex =  pocket.findCardPosPocket(card);
                 pocket.hand[cardHouse-OFFSETS][cardPocketIndex+1] = card;
                 pocket.hand[cardHouse-OFFSETS][cardHouse+1] +=1;
                 board[pos_y][pos_x]= 0;
                 pocket.availableCard[cardHouse-OFFSETS] -= 1;
-                if (pocket.availableCard[cardHouse-OFFSETS] == 0 && companions != 0){
+                if (pocket.availableCard[cardHouse-OFFSETS] == 0 && COMPANIONS != 0){
                     pocket.availableCard[cardHouse-OFFSETS] = -1;
-                    companions -= 1;
+                    COMPANIONS -= 1;
                 }
                 int cardAvailability = pocket.availableCard[cardHouse-OFFSETS] == -1 ? 0 : pocket.availableCard[cardHouse-OFFSETS];
                 if(pocket.hand[cardHouse-OFFSETS][cardHouse+1] >= (cardHouse - cardAvailability - pocket.hand[cardHouse-OFFSETS][cardHouse+1]) ) {
@@ -102,49 +104,19 @@ public class Board {
     }
 
     /**
-     * Recursively find the house of a card depending of it's value
+     * Find the house of a card depending of it's value
      *
      * @param card the card number between 1 and 35
-     * @param houseSize the number of the biggest house
-     * @param cardSet the biggest card value
      * @return the house of the card
      */
-    public int findHouse(int card, int houseSize, int cardSet){
-        int house = 1;
-        if(card <= 0) {
-            return house;
+    public int findHouse(int card){
+        if(card <= 0){
+            // when card is not between 1 and 35 inclusively
+            return -1;
         }
-        if( card <= (cardSet - houseSize)){
-            int newCardSet = cardSet - houseSize;
-            house = findHouse(card,houseSize-1,newCardSet);
-        }
-        else{
-            house = houseSize;
-        }
-        return house;
-    }
-
-    /**
-     * Recursively find the position of a card in the pocket depending on
-     * the value of the card
-     *
-     * @param card the card number between 1 and 35
-     * @param houseSize the number of the biggest house
-     * @param cardSet the biggest card value
-     * @return the position of the card in the pocket
-     */
-    public int findCardPosPocket(int card, int houseSize, int cardSet){
-        int position = 0;
-        int newCardSet = 0;
-        if( card <= (cardSet - houseSize)){
-            newCardSet = cardSet - houseSize;
-            position = findCardPosPocket(card,houseSize-1,newCardSet);
-        }
-        else{
-            newCardSet = cardSet - houseSize;
-            position = card - newCardSet - 1 ;
-        }
-        return position;
+        // card identifier start at 1
+        int card_pos = card-1;
+        return CARDMATCHHOUSE[card_pos];
     }
 
     /**
@@ -153,11 +125,90 @@ public class Board {
      * @param board the board that requied the evaluation
      * @param x position on x axe of the moving card
      * @param y position on y axe of the moving card
-     * @param direction the direction the function will go throught the bord
-     * (+1) and (-1)
      * @return a 2D array of all possible position on x axe
      */
-    public int[][] moves_x(int[][] board, int x, int y, int direction){
+    public int[][] moves_x(int[][] board, int x, int y){
+        int[] found_houses = {2,3,4,5,6,7,8};
+        // last index is of array at [5][0] is the number of moves found
+        int[][] moves = new int[6][2];
+        int moveFound = 0;
+        for(int i = 0; i <= SIZE-1 - x; i++){
+            int card_x = board[y][(SIZE-1)-i];
+            //skip case in board set to 0 and anything under
+            if( card_x < 1){ continue; }
+            int house_card_x = findHouse(card_x);
+            if( found_houses[house_card_x - 2] == house_card_x){
+                found_houses[house_card_x - 2] = 0;
+                moves[moveFound][0] = (SIZE-1)-i;
+                moves[moveFound++][1] = y;
+            }
+        }
+        found_houses = new int[]{2, 3, 4, 5, 6, 7, 8};
+        for(int i = 0; i < x ; i++){
+            int card_x = board[y][i];
+            int house_card_x = findHouse(card_x);
+            if( found_houses[house_card_x - 2] == house_card_x){
+                found_houses[house_card_x - 2] = 0;
+                moves[moveFound][0] = i;
+                moves[moveFound++][1] = y;
+            }
+        }
+
+        moves[5][0] = moveFound;
+        return moves;
+    }
+    /**
+     * Find availaible move on axe y
+     *
+     * @param board the board that requied the evaluation
+     * @param x position on x axe of the moving card
+     * @param y position on y axe of the moving card
+     * @return a 2D array of all possible position on y axe
+     */
+    public int[][] moves_y(int[][] board, int x, int y) {
+        int[] found_houses = {2, 3, 4, 5, 6, 7, 8};
+        // last index is of array at [5][0] is the number of moves found
+        int[][] moves = new int[6][2];
+        int moveFound = 0;
+        for (int i = 0; i <= SIZE - 1 - y; i++) {
+            int card_y = board[(SIZE - 1) - i][x];
+            //skip case in board set to 0 and anything under
+            if (card_y < 1) {
+                continue;
+            }
+            int house_card_y = findHouse(card_y);
+            if (found_houses[house_card_y - 2] == house_card_y) {
+                found_houses[house_card_y - 2] = 0;
+                moves[moveFound][0] = x;
+                moves[moveFound++][1] = (SIZE - 1) - i;
+            }
+        }
+        found_houses = new int[]{2, 3, 4, 5, 6, 7, 8};
+        for (int i = 0; i < y; i++) {
+            int card_y = board[i][x];
+            int house_card_y = findHouse(card_y);
+            if (found_houses[house_card_y - 2] == house_card_y) {
+                found_houses[house_card_y - 2] = 0;
+                moves[moveFound][0] = x;
+                moves[moveFound++][1] = i;
+            }
+        }
+
+        moves[5][0] = moveFound;
+
+        return moves;
+    }
+    /**
+     * DEPRECATED Find availaible move on axe x
+     *
+     * @param board the board that requied the evaluation
+     * @param x position on x axe of the moving card
+     * @param y position on y axe of the moving card
+     * @param direction the direction the function will go throught the bord
+     * (+1) and (-1)
+     * @return a 2D array of all possible position on y axe
+     */
+    public int[][] DEPRICATED_moves_x(int[][] board, int x, int y, int direction){
         int[] foundHouses_x = {2,3,4,5,6,7,8};
         // last index is of array at [5][0] is the number of moves found
         int[][] moves = new int[6][2];
@@ -166,7 +217,7 @@ public class Board {
         int next = start;
         while(x != next && next >= 0 && next <= 5 ){
             int card_x = board[y][next];
-            int house_x = findHouse(card_x,8,35);
+            int house_x = findHouse(card_x);
             if ( house_x != 1 && foundHouses_x[house_x - 2] == house_x) {
                 foundHouses_x[house_x - 2] = 0;
                 moves[moveFound][0] = next;
@@ -176,16 +227,18 @@ public class Board {
             next =  next + (direction);
         }
         if((x == start || (x == next && x > 0 && x < 5)) && direction != -1) {
-            int[][] restMove = moves_x(board,x,y,direction * (-1));
+            int[][] restMove = DEPRICATED_moves_x(board,x,y,direction * (-1));
             System.arraycopy(restMove,0,moves,moveFound,restMove[5][0]);
             moves[5][0] += restMove[5][0];
             return moves;
         }
+
         return moves;
+
     }
 
     /**
-     * Find availaible move on axe y
+     * DEPRECATED Find availaible move on axe y
      *
      * @param board the board that requied the evaluation
      * @param x position on x axe of the moving card
@@ -194,7 +247,7 @@ public class Board {
      * (+1) and (-1)
      * @return a 2D array of all possible position on y axe
      */
-    public int[][] moves_y(int[][] board, int x, int y, int direction){
+    public int[][] DEPRICATED_moves_y(int[][] board, int x, int y, int direction){
         int[] foundHouses_y = {2,3,4,5,6,7,8};
         // last index is of array at [5][0] is the number of moves found
         int[][] moves = new int[6][2];
@@ -203,7 +256,7 @@ public class Board {
         int next = start;
         while(y != next && next >= 0 && next <= 5){
             int card_y = board[next][x];
-            int house_y = findHouse(card_y,8,35);
+            int house_y = findHouse(card_y);
             if (house_y != 1 && foundHouses_y[house_y - 2] == house_y) {
                 foundHouses_y[house_y - 2] = 0;
                 moves[moveFound][0] = x;
@@ -213,7 +266,7 @@ public class Board {
             next =  next + (direction);
         }
         if(y == start || (y == next && y > 0 && y < 5) && direction != -1) {
-            int[][] restMove = moves_y(board,x,y,direction * (-1));
+            int[][] restMove = DEPRICATED_moves_y(board,x,y,direction * (-1));
             System.arraycopy(restMove,0,moves,moveFound,restMove[5][0]);
             moves[5][0] += restMove[5][0];
             return moves;
@@ -226,21 +279,28 @@ public class Board {
     /**
      * Find all the possible move by using moves_x and moves_y at a position
      * (x,y)
+     * NOTE :
+     *  moves[10][1] is 1 = shield and 0 = no shield
+     *  moves[11][1] nb of moves in the array
      *
      * @param board the board that requied the evaluation
      * @param x position on x axe of the moving card
      * @param y position on y axe of the moving card
+     * @param direction the direction the function will go throught the bord on axes
+     * (+1) and (-1)
      * @return  a 2D array of all possible position
      */
     public int[][] moves(int[][] board, int x, int y,int direction){
-        int[][] moves_x = moves_x(board,x,y,direction);
-        int[][] moves_y = moves_y(board,x,y,direction);
+        int[][] moves_x = moves_x(board,x,y);
+        int[][] moves_y = moves_y(board,x,y);
+        // 2 extra array space :
         // moves[10][1] is 1 = shield and 0 = no shield
         // moves[11][1] nb of moves in the array
         int[][] moves = new int[12][2];
         System.arraycopy(moves_x,0,moves,0,moves_x[5][0]);
         System.arraycopy(moves_y,0,moves,moves_x[5][0],moves_y[5][0]);
         int numberMoves = moves_x[5][0] + moves_y[5][0];
+        //last position in the array is the number of moves
         moves[11][0] = numberMoves;
         for (int i = numberMoves; i < 10; i++ ){
             // -1 at x position for empty moves space in the array
@@ -307,7 +367,7 @@ public class Board {
                     }
                 }
                 else{
-                    int house =findHouse(card,8,35);
+                    int house =findHouse(card);
                     board.append(colorHouseBoardOrderUn[house - 2]).append(colorHouseBoardOrderF[house - 2]).append(String.format("%-3.3s", this.board[i][j])).append(ANSI_RESET);
                 }
             }
