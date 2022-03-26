@@ -4,7 +4,7 @@ public class AI {
     long finish ;
     long timeElapsed ;
     final long MAXTIME = 459999999000l;
-    int depth = 7;
+    int depth = 9;
 
     public AI(int[][] board) {
         this.board = new Board();
@@ -22,15 +22,15 @@ public class AI {
     public int[] bestMove(int x, int y, Pocket pocket){
         double maxScore = -10000;
         start = System.nanoTime();
-        int[][] moves = this.board.moves(board.deepCopyBoard(),x,y,1);
+        int[][] moves = this.board.moves(board.deepCopyBoard(),x,y);
         int[] bestMove = {moves[0][0],moves[0][1]};
         for(int[] move : moves ){
-            Pocket tempPocket = new Pocket(pocket.hand ,pocket.availableCard);
+            Pocket tempPocket = new Pocket(pocket.hand ,pocket.nbAvailableCard);
             if (move[0] == -1){
                 break;
             }
-            int [][] board = this.board.moveCard(x,y,move[0],move[1],this.board.deepCopyBoard(),tempPocket,false);
-            double score = minMax(board,pocket.hand,pocket.availableCard,depth,-10000,10000,false,move[0],move[1], 1);
+            int [][] board = this.board.moveCard(x,y,move[0],move[1],this.board.deepCopyBoard(),tempPocket,false,false);
+            double score = minMax(board,pocket.hand,pocket.nbAvailableCard,depth,-10000,10000,false,move[0],move[1], 1);
             if (score > maxScore){
                 maxScore = score;
                 bestMove[0] = move[0];
@@ -59,43 +59,43 @@ public class AI {
             }
         }
         if (depth == 0) {
-            int[][] moves = this.board.moves(board,x,y,1);
+            int[][] moves = this.board.moves(board,x,y);
             return this.evaluation(board, pocket, availableCard, moves, currentDepth);
         }
         if (isMax) {
-            int[][] moves = this.board.moves(board,x,y,1);
-            Pocket pkt = new Pocket(pocket,availableCard);
-            for (int[] move : moves) {
-                int[][] boardCopy = this.board.deepCopyBoard(board);
-                if (move[0] == -1){
-                    break;
+                int[][] moves = this.board.moves(board,x,y);
+                Pocket pkt = new Pocket(pocket,availableCard);
+                for (int[] move : moves) {
+                    int[][] boardCopy = this.board.deepCopyBoard(board);
+                    if (move[0] == -1){
+                        break;
+                    }
+                    int[][] tempBoard = this.board.moveCard(x,y,move[0],move[1],boardCopy,pkt,false,false);
+                    double eval = minMax(tempBoard, pkt.hand, pkt.nbAvailableCard, depth - 1, alpha, beta, false,move[0],move[1], currentDepth + 1);
+                    if (timeElapsed > MAXTIME) {
+                        return eval;
+                    }
+                    maxEval = Math.max(maxEval, eval);
+                    alpha = Math.max(alpha, maxEval);
+                    if (beta <= alpha) {
+                        break;
+                    }
                 }
-                int[][] tempBoard = this.board.moveCard(x,y,move[0],move[1],boardCopy,pkt,false);
-                double eval = minMax(tempBoard, pkt.hand, pkt.availableCard, depth - 1, alpha, beta, false,move[0],move[1], currentDepth + 1);
-                if (timeElapsed > MAXTIME) {
-                    return eval;
+                if(moves[11][0] == 0){
+                    return this.evaluation(board, pocket, availableCard, moves, currentDepth);
                 }
-                maxEval = Math.max(maxEval, eval);
-                alpha = Math.max(alpha, maxEval);
-                if (beta <= alpha) {
-                    break;
-                }
-            }
-            if(moves[11][0] == 0){
-                return this.evaluation(board, pocket, availableCard, moves, currentDepth);
-            }
-            return maxEval;
+                return maxEval;
         } else {
 
-            int[][] moves = this.board.moves(board,x,y,1);
+            int[][] moves = this.board.moves(board,x,y);
             Pocket pkt = new Pocket(pocket,availableCard);
             for (int[] move : moves) {
                 int[][] boardCopy = this.board.deepCopyBoard(board);
                 if (move[0] == -1){
                     break;
                 }
-                int[][] tempBoard = this.board.moveCard(x,y,move[0],move[1],boardCopy,pkt,true);
-                double eval = minMax(tempBoard, pkt.hand, pkt.availableCard, depth - 1, alpha, beta, true,move[0],move[1],currentDepth + 1);
+                int[][] tempBoard = this.board.moveCard(x,y,move[0],move[1],boardCopy,pkt,true,false);
+                double eval = minMax(tempBoard, pkt.hand, pkt.nbAvailableCard, depth - 1, alpha, beta, true,move[0],move[1],currentDepth + 1);
                 if (timeElapsed > MAXTIME) {
                     return eval;
                 }
@@ -134,45 +134,43 @@ public class AI {
             int nbCardHousePocket = house + 1;
             int badge = house + 2;
             int housePos = house - 2;
-            if (houseHand[badge] == 1){
-                score += MAXSCORE/8;
-            }
-            /*int cardAvailability = availableCard[housePos] == -1 ? 0 : availableCard[housePos];
+            int cardAvailability = availableCard[housePos] == -1 ? 0 : availableCard[housePos];
             if((float)(cardAvailability + houseHand[nbCardHousePocket])/house > 0.50f || houseHand[badge] == 1 ){
                 if((houseHand[nbCardHousePocket] / house) > 0.50){
                     score += ((MAXSCORE * 0.75)/8 );
                 }
-                else{
-                    *//*for( int i = 1; i <= houseHand[nbCardHousePocket]; i++ ){
+                /*else{
+                    for( int i = 1; i <= houseHand[nbCardHousePocket]; i++ ){
                         score += (((MAXSCORE/4) * 0.75)/(8 * house));
                         //score += ((MAXSCORE * 0.75)/(house * K))/house;
-                    }*//*
+                    }
                     score += houseHand[nbCardHousePocket] * ((MAXSCORE * 0.125)/(7 * house));
-                }
+                }*/
             }
-            else{
+            /*else{
                 score -= ((MAXSCORE * 0.75)/8 );
-            }
-           *//* if(availableCard[house-2] == -1){
+            }*/
+            /*if(availableCard[house-2] == -1){
                 //score += ((MAXSCORE * 0.25)/8);
                 //score += ((MAXSCORE * 0.75)/(house * K))/(house*8);
-            }*//*
-            if(houseHand[badge] == 1 ){
-                numberShield++;*/
-            //}
-            house++;
+            }*/
+            /*if(houseHand[badge] == 1 ){
+                numberShield++;
+            }
+            house++;*/
 
         }
-        /*if(moves[11][0] == 0){
+        if(moves[11][0] == 0){
             if (numberShield >= 4){
-                score = MAXSCORE * 0.75;
-                score += (MAXSCORE * 0.125)/numMove;
+                score = MAXSCORE;
+               /* score = MAXSCORE * 0.75;
+                score += (MAXSCORE * 0.125)/numMove;*/
             }
-            else{
+            /*else{
                 score = -MAXSCORE * 0.75;
                 score -= (MAXSCORE * 0.125)/numMove;
-            }
-        }*/
+            }*/
+        }
 
         //score  += (MAXSCORE * 0.15625)/((10 - numberShield) * K);
 

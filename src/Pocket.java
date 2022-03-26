@@ -7,11 +7,11 @@ public class Pocket {
     // ex hand = [[],[],[],[],[],[],[],[],<-- houses info| rupture | general pocket info --->[],[],[],]
     private final int EXTRASETSPACE = 3;
     // number of card available per house
-    public int[] availableCard = new int[] {2,3,4,5,6,7,8};
+    public int[] nbAvailableCard = new int[] {2,3,4,5,6,7,8};
     private int[] CARDHANDPOS = {0,1,0,1,2,0,1,2,3,0,1,2,3,4,0,1,2,3,4,5,
             0,1,2,3,4,5,6,0,1,2,3,4,5,6,7};
 
-    public Pocket(int[][] hand, int[] availableCard) {
+    public Pocket(int[][] hand, int[] nbAvailableCard) {
         int[][] pocketCopy =  new int[7][];
         int i = 0;
         for(int[] row : hand){
@@ -19,7 +19,8 @@ public class Pocket {
             pocketCopy[i++] = rowCopy;
         }
         this.hand = pocketCopy;
-        System.arraycopy(availableCard,0,this.availableCard,0,7);
+        System.arraycopy(nbAvailableCard,0,this.nbAvailableCard,0,7);
+
     }
 
     public Pocket() {

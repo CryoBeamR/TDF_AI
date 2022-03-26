@@ -48,7 +48,7 @@ public class Main {
         if(coinSide == 1){
             System.out.println("Computer will start.");
         }
-        int[][] moves = ai.board.moves(ai.board.getBoard(),moveCard[0],moveCard[1],1);
+        int[][] moves = ai.board.moves(ai.board.getBoard(),moveCard[0],moveCard[1]);
         // false if it's human turn and true if it's computer turn
         boolean turn = coinSide != 1;
         while(moves[11][0] != 0){
@@ -70,7 +70,7 @@ public class Main {
                 System.out.print("----> ");
                 int chooseMove = scn.nextLine().trim().toUpperCase().charAt(0);
                 int posMove = chooseMove - decimalLetter;
-                ai.board.moveCard(moveCard[0], moveCard[1], moves[posMove][0], moves[posMove][1], ai.board.getBoard(), pocket, true);
+                ai.board.moveCard(moveCard[0], moveCard[1], moves[posMove][0], moves[posMove][1], ai.board.getBoard(), pocket, true,true);
                 moveCard[0] = moves[posMove][0];
                 moveCard[1] = moves[posMove][1];
                 String board = ai.board.toString(pocket);
@@ -79,12 +79,12 @@ public class Main {
             else{
                 System.out.println("----- Computer turn :$ ----- ");
                 int[] move = ai.bestMove(moveCard[0],moveCard[1],pocket);
-                ai.board.moveCard(moveCard[0],moveCard[1],move[0],move[1],ai.board.getBoard(),pocket,false);
+                ai.board.moveCard(moveCard[0],moveCard[1],move[0],move[1],ai.board.getBoard(),pocket,false,true);
                 moveCard[0] = move[0];
                 moveCard[1] = move[1];
             }
             turn = !turn;
-            moves = ai.board.moves(ai.board.getBoard(),moveCard[0],moveCard[1],1);
+            moves = ai.board.moves(ai.board.getBoard(),moveCard[0],moveCard[1]);
         }
         int shieldWon = 0;
         for(int[] house : pocket.hand){

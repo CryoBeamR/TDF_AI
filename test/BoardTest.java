@@ -75,7 +75,7 @@ class BoardTest {
         Pocket pocket = new Pocket();
         pocket.initiatePocketSpace();
         int[][] movedBoard =  board.grabCard(0,5,0,0,
-                boardArray,pocket,true);
+                boardArray,pocket,true, true);
         for(int i=0; i < 6; i++){
             System.out.println(Arrays.toString(movedBoard[i]));
         }
@@ -105,7 +105,7 @@ class BoardTest {
         Pocket pocket = new Pocket();
         pocket.initiatePocketSpace();
         int[][] movedBoard =  board.moveCard(0,5,5,5,
-                boardArray,pocket, true);
+                boardArray,pocket, true,true);
         for(int i=0; i < 6; i++){
             System.out.println(Arrays.toString(movedBoard[i]));
         }
@@ -124,10 +124,10 @@ class BoardTest {
                 {25,26,27,28,29,30},
                 {-1,24,13,33,1,31}
         };
-        int[][] expectedMoves = {{5,5},{4,5},{2,5},{1,5},{0,0},{0,1},{0,4},{-1,0},{-1,0},{-1,0},{0,0},{7,0}};
+        int[][] expectedMoves = {{5,5},{4,5},{2,5},{1,5},{0,0},{0,1},{0,4},{-1,0},{-1,0},{-1,0},{-1,0},{7,0}};
 
         Board board = new Board();
-        int[][] moves=  board.moves(boardArray,0,5,1);
+        int[][] moves=  board.moves(boardArray,0,5);
 
         assertArrayEquals(expectedMoves,moves);
 
@@ -141,9 +141,9 @@ class BoardTest {
                 {25,26,27,28,29,30},
                 {31,24,13,33,1,-1}
         };
-        int[][] expectedMoves2 = {{0,5},{1,5},{2,5},{4,5},{5,0},{5,2},{5,4},{-1,0},{-1,0},{-1,0},{0,0},{7,0}};
+        int[][] expectedMoves2 = {{0,5},{1,5},{2,5},{4,5},{5,0},{5,2},{5,4},{-1,0},{-1,0},{-1,0},{-1,0},{7,0}};
 
-        moves=  board.moves(boardArray2,5,5,1);
+        moves=  board.moves(boardArray2,5,5);
         assertArrayEquals(expectedMoves2,moves);
 
         // Board #3
@@ -156,9 +156,9 @@ class BoardTest {
                 {25,26,27,28,29,30},
                 {31,24,13,33,1,22}
         };
-        int[][] expectedMoves3 = {{5,3},{3,3},{0,3},{1,3},{2,5},{2,4},{2,0},{2,1},{2,2},{-1,0},{0,0},{9,0}};
+        int[][] expectedMoves3 = {{5,3},{3,3},{0,3},{1,3},{2,5},{2,4},{2,0},{2,1},{2,2},{-1,0},{-1,0},{9,0}};
 
-        moves=  board.moves(boardArray3,2,3,1);
+        moves=  board.moves(boardArray3,2,3);
 
         assertArrayEquals(expectedMoves3,moves);
 
@@ -176,7 +176,7 @@ class BoardTest {
         };
         int[][] expectedMoves3 = {{5,3},{3,3},{0,3},{1,3},{0,0},{4,0}};
         Board board = new Board();
-        int[][] moves=  board.moves_x(boardArray3,2,3);
+        int[][] moves=  board.moves_axe(boardArray3,2,3,0);
 
         assertArrayEquals(expectedMoves3,moves);
         int[][] boardArray4 = {
@@ -188,7 +188,7 @@ class BoardTest {
                 {31,24,13,33,1,22}
         };
         int[][] expectedMoves4 = {{0,1},{2,1},{3,1},{0,0},{0,0},{3,0}};
-        int[][] moves2 =  board.moves_x(boardArray4,5,1);
+        int[][] moves2 =  board.moves_axe(boardArray4,5,1,0);
 
         assertArrayEquals(expectedMoves4,moves2);
 
@@ -201,7 +201,7 @@ class BoardTest {
                 {31,24,13,33,1,22}
         };
         int[][] expectedMoves5 = {{5,1},{4,1},{2,1},{0,0},{0,0},{3,0}};
-        int[][] moves3 =  board.moves_x(boardArray5,0,1);
+        int[][] moves3 =  board.moves_axe(boardArray5,0,1,0);
 
         assertArrayEquals(expectedMoves5,moves3);
 
@@ -219,7 +219,7 @@ class BoardTest {
         };
         int[][] expectedMoves3 = {{2,5},{2,4},{2,0},{2,1},{2,2},{5,0}};
         Board board = new Board();
-        int[][] moves=  board.moves_y(boardArray3,2,3);
+        int[][] moves=  board.moves_axe(boardArray3,2,3,1);
 
         assertArrayEquals(expectedMoves3,moves);
 
@@ -232,7 +232,7 @@ class BoardTest {
                 {31,24,13,33,1,22}
         };
         int[][] expectedMoves4 = {{2,5},{2,4},{2,3},{2,2},{2,1},{5,0}};
-        int[][] moves2 =  board.moves_y(boardArray4,2,0);
+        int[][] moves2 =  board.moves_axe(boardArray4,2,0,1);
 
         assertArrayEquals(expectedMoves4,moves2);
 
@@ -245,7 +245,7 @@ class BoardTest {
                 {31,24,-1,33,1,22}
         };
         int[][] expectedMoves5 = {{2,0},{2,1},{2,2},{2,3},{2,4},{5,0}};
-        int[][] moves3 =  board.moves_y(boardArray5,2,5);
+        int[][] moves3 =  board.moves_axe(boardArray5,2,5,1);
 
         assertArrayEquals(expectedMoves5,moves3);
     }
