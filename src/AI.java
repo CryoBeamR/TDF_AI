@@ -36,13 +36,17 @@ public class AI {
                 bestMove[0] = move[0];
                 bestMove[1] = move[1];
             }
+
+            //debug
+            System.out.print("Move:" + "["+move[0]+","+move[1]+"]"+" --> "+ score +", ");
+            System.out.println();
             if(timeElapsed > MAXTIME){
                 System.out.println( depth + "<--- depth reached");
                 System.out.println( "Move : {"+ bestMove[0]+","+bestMove[1]+"}");
                 return bestMove;
             }
         }
-        System.out.println( "Move : {"+ bestMove[0]+","+bestMove[1]+"}");
+        System.out.println( "Best Move : {"+ bestMove[0]+","+bestMove[1]+"}");
         return bestMove;
     }
 
@@ -135,10 +139,30 @@ public class AI {
             int badge = house + 2;
             int housePos = house - 2;
             int cardAvailability = availableCard[housePos] == -1 ? 0 : availableCard[housePos];
-            if((float)(cardAvailability + houseHand[nbCardHousePocket])/house > 0.50f || houseHand[badge] == 1 ){
-                if((houseHand[nbCardHousePocket] / house) > 0.50){
-                    score += ((MAXSCORE * 0.75)/8 );
+            if(moves[11][0] == 0){
+                if (numberShield >= 4){
+                    score = MAXSCORE;
+                    return score;
+               /* score = MAXSCORE * 0.75;
+                score += (MAXSCORE * 0.125)/numMove;*/
                 }
+                else{
+                    /*score = -MAXSCORE * 0.75;
+                    score -= (MAXSCORE * 0.125)/numMove;*/
+                    return MAXSCORE * -1;
+                }
+            }
+            if((float)(cardAvailability + houseHand[nbCardHousePocket])/house > 0.50f || houseHand[badge] == 1 ){
+                if(houseHand[badge] == 1 ){
+                    score += ((MAXSCORE * 0.75)/(8*2) );
+                }
+                if((houseHand[nbCardHousePocket] / house) > 0.50 ){
+                    score += ((MAXSCORE * 0.75)/(8*2) );
+                }
+                else{
+                    score += ((MAXSCORE * 0.20)/8 );
+                }
+                score += ((MAXSCORE * 0.05)*houseHand[nbCardHousePocket])/(8*house);
                 /*else{
                     for( int i = 1; i <= houseHand[nbCardHousePocket]; i++ ){
                         score += (((MAXSCORE/4) * 0.75)/(8 * house));
@@ -147,9 +171,9 @@ public class AI {
                     score += houseHand[nbCardHousePocket] * ((MAXSCORE * 0.125)/(7 * house));
                 }*/
             }
-            /*else{
+            else{
                 score -= ((MAXSCORE * 0.75)/8 );
-            }*/
+            }
             /*if(availableCard[house-2] == -1){
                 //score += ((MAXSCORE * 0.25)/8);
                 //score += ((MAXSCORE * 0.75)/(house * K))/(house*8);
@@ -159,17 +183,6 @@ public class AI {
             }
             house++;*/
 
-        }
-        if(moves[11][0] == 0){
-            if (numberShield >= 4){
-                score = MAXSCORE;
-               /* score = MAXSCORE * 0.75;
-                score += (MAXSCORE * 0.125)/numMove;*/
-            }
-            /*else{
-                score = -MAXSCORE * 0.75;
-                score -= (MAXSCORE * 0.125)/numMove;
-            }*/
         }
 
         //score  += (MAXSCORE * 0.15625)/((10 - numberShield) * K);
