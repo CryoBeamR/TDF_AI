@@ -143,7 +143,7 @@ public class Board {
         int axeVal = axe ==  axeX ? x : y;
         for(int i = 0; i <= SIZE-1 - axeVal; i++){
             int card = axe == axeX ? board[y][(SIZE-1)-i] : board[(SIZE-1)-i][x];
-            //skip case in board set to 0 and anything under
+            //skip places in board set to 0 and anything under
             if( card < 1){ continue; }
             int houseCard = findHouse(card);
             if( foundHouses[houseCard - 2] == houseCard){
