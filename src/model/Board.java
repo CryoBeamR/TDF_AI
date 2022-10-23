@@ -1,22 +1,23 @@
+package model;
+
+import java.util.Arrays;
+
 public class Board {
-    // board of n x n size
-    public final int SIZE = 6;
-    private int[][] board = new int[SIZE][SIZE];
+    // board of SIZE x SIZE
+    public static final int SIZE = 6;
+    private static final int EMPTY_SPACE = 0;
+    private int[][] board;
     private int COMPANIONS = 6;
-    private int HOUSESIZE = 8;
+    private final int HOUSESIZE = 8;
     //exclude the moving card ( identified by -1 )
-    private int CARDSIZE = 35;
-    private int[] CARDMATCHHOUSE = {2,2,3,3,3,4,4,4,4,5,5,5,5,5,6,6,6,6,6,6,7,7,7,7,7,7,7,8,8,8,8,8,8,8,8};
-    private int[] availableCard = new int[CARDSIZE];
+    private final int CARDSIZE = 35;
+    private final static  int[] MAP_CARD_HOUSE = {2,2,3,3,3,4,4,4,4,5,5,5,5,5,6,6,6,6,6,6,7,7,7,7,7,7,7,8,8,8,8,8,8,8,8};
 
 
-    public Board() {
-        for (int i = 1; i < SIZE * SIZE; i++){
-            availableCard[i - 1] = i;
-        }
+
+    public Board(int[][] board) {
+        this.board = board;
     }
-
-    public void setBoard(int[][] board){ this.board = board; }
 
     public int[][] getBoard() { return board; }
 
@@ -45,11 +46,12 @@ public class Board {
      * @param board the board that the action will be execute on
      * @return the board array with de deplacement made
      **/
-    public int[][] moveCard(int init_x, int init_y, int x, int y, int[][] board,
-                            Pocket pocket, boolean oponentTurn,boolean updateCardStatus)
+    public static int[][] moveCard(int init_x, int init_y, int x, int y, int[][] board,
+                            Pocket pocket, boolean updateHand)
     {
-        board[init_y][init_x] = 0;
-        grabCard(init_x,init_y,x,y,board,pocket,oponentTurn,updateCardStatus);
+        board[init_y][init_x] = EMPTY_SPACE;
+        int [] grabbedCard = grabCard(init_x,init_y,x,y,board);
+        pocket.updateHand(grabbedCard, updateHand);
         board[y][x] = -1;
         return board;
     }
@@ -63,8 +65,7 @@ public class Board {
      * @param y point on y axe
      * @param board the board that the action will be execute on
     **/
-    public int[][] grabCard(int init_x, int init_y, int x, int y, int[][] board,
-                            Pocket pocket, boolean oponentTurn, boolean updateCardStatus){
+    public static int[] grabCard(int init_x, int init_y, int x, int y, int[][] board){
         int pos_x = init_x;
         int pos_y = init_y;
         int signe =  ((x - init_x) + (y - init_y))/Math.abs((x - init_x) + (y - init_y));
@@ -72,42 +73,20 @@ public class Board {
         int vect_y = init_y != y ? signe : 0;
         int targetCard = board[y][x];
         int targetHouse = findHouse(targetCard);
-        // this offset is use to find the position of house in the a array
-        final int OFFSETS = 2;
+        int[] grabbedCard = new int[SIZE+1];
+        Arrays.fill(grabbedCard,-1);
+        int grabCardCount = 0;
         while( pos_x != x || pos_y != y){
             pos_x += vect_x;
             pos_y += vect_y;
             int card = board[pos_y][pos_x];
             int cardHouse =  findHouse(card);
-            if(targetHouse == cardHouse && !oponentTurn){
-                // add to pocket if it's the AI turn
-                int cardPocketIndex =  pocket.findCardPosPocket(card);
-                pocket.hand[cardHouse-OFFSETS][cardPocketIndex+1] = card;
-                pocket.hand[cardHouse-OFFSETS][cardHouse+1] +=1;
-                board[pos_y][pos_x]= 0;
-                pocket.nbAvailableCard[cardHouse-OFFSETS] -= 1;
-                if (pocket.nbAvailableCard[cardHouse-OFFSETS] == 0 && COMPANIONS != 0){
-                    pocket.nbAvailableCard[cardHouse-OFFSETS] = -1;
-                    COMPANIONS -= 1;
-                }
-                int cardAvailability = pocket.nbAvailableCard[cardHouse-OFFSETS] == -1 ? 0 : pocket.nbAvailableCard[cardHouse-OFFSETS];
-                if(pocket.hand[cardHouse-OFFSETS][cardHouse+1] >= (cardHouse - cardAvailability - pocket.hand[cardHouse-OFFSETS][cardHouse+1]) ) {
-                    pocket.hand[cardHouse-OFFSETS][cardHouse+2] = 1;
-                }
-
-                if(updateCardStatus){availableCard[card -1] = 0;}
-            }
-            else if(targetHouse == cardHouse){
-                board[pos_y][pos_x]= 0;
-                pocket.nbAvailableCard[cardHouse-OFFSETS] -= 1;
-                int cardAvailability = pocket.nbAvailableCard[cardHouse-OFFSETS] == -1 ? 0 : pocket.nbAvailableCard[cardHouse-OFFSETS];
-                if(pocket.hand[cardHouse-OFFSETS][cardHouse+1] <= (cardHouse - cardAvailability - pocket.hand[cardHouse-OFFSETS][cardHouse+1])) {
-                    pocket.hand[cardHouse-OFFSETS][cardHouse+2] = 0;
-                }
-                if(updateCardStatus){availableCard[card -1] = 0;}
+            if(targetHouse == cardHouse){
+                board[pos_y][pos_x] = EMPTY_SPACE;
+                grabbedCard[grabCardCount++] = card;
             }
         }
-        return board;
+        return grabbedCard;
     }
 
     /**
@@ -116,14 +95,14 @@ public class Board {
      * @param card the card number between 1 and 35
      * @return the house of the card
      */
-    public int findHouse(int card){
+    public static int findHouse(int card){
         if(card <= 0){
             // when card is not between 1 and 35 inclusively
             return -1;
         }
         // card identifier start at 1
         int card_pos = card-1;
-        return CARDMATCHHOUSE[card_pos];
+        return MAP_CARD_HOUSE[card_pos];
     }
     /**
      * Find availaible move on axe x or y
@@ -134,7 +113,7 @@ public class Board {
      * @param axe 0 for x axe and 1 for y axe
      * @return a 2D array of all possible position on x axe
      */
-    public int[][] moves_axe(int[][] board, int x, int y,int axe){
+    public static int[][] moves_axe(int[][] board, int x, int y,int axe){
         int[] foundHouses = {2,3,4,5,6,7,8};
         // last index is of array at [5][0] is the number of moves found
         int[][] moves = new int[SIZE][2];
@@ -179,7 +158,7 @@ public class Board {
      * @param y position on y axe of the moving card
      * @return  a 2D array of all possible position
      */
-    public int[][] moves(int[][] board, int x, int y){
+    public static int[][] moves(int[][] board, int x, int y){
         int axeX = 0;
         int axeY = 1;
         // the last index in move_x and move_y
@@ -216,6 +195,32 @@ public class Board {
             boardCopy[i++] = rowCopy;
         }
         return boardCopy;
+    }
+    public static int[] shuffleBoardCards(int[][] board){
+
+        int[] moveCard = new int[2];
+        for(int i = 0; i < 6; i++ ){
+            for(int j = 0; j < 6; j++ ){
+                double randDouble =  Math.random() * 5;
+                int randIntX = (int) randDouble;
+                randDouble =  Math.random() * 5;
+                int randIntY = (int) randDouble;
+                int temps = board[i][j];
+                board[i][j] = board[randIntY][randIntX];
+                board[randIntY][randIntX] = temps;
+            }
+        }
+        for(int i = 0; i < 6; i++ ){
+            for(int j = 0; j < 6; j++ ){
+                if( board[i][j] == -1 ){
+                    moveCard[0] = j;
+                    moveCard[1] = i;
+                    break;
+                }
+
+            }
+        }
+        return moveCard;
     }
 
     public String toString(Pocket pocket){
