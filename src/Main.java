@@ -1,13 +1,13 @@
+import agent.MinMaxAgent;
 import model.Board;
 import model.Pocket;
 
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] arg){
-        int[][] board = {
+        int[][] genericBoard = {
                 {1,2,3,4,5,6},
                 {12,11,10,9,8,7},
                 {13,14,15,16,17,18},
@@ -15,27 +15,27 @@ public class Main {
                 {25,26,27,28,29,30},
                 {-1,35,34,33,32,31}
         };
-         int[] moveCard = Board.shuffleBoardCards(board);
-
-
-        System.out.println(Arrays.deepToString(board));
-        System.out.println("Move : {"+ moveCard[0]+","+moveCard[1]+"}" );
-
-        MinMaxAgent minMaxAgent = new MinMaxAgent(board);
+        Board board = new Board(genericBoard);
+        int[] moveCard = board.shuffleBoardCards();
+        MinMaxAgent minMaxAgent = new MinMaxAgent();
         Pocket pocket = new Pocket();
+
         double randDouble =  Math.random()*2 ;
-        int coinSide = (int) randDouble;
-        if(coinSide == 1){
+        int randomInt = (int) randDouble;
+        if(randomInt == 1){
             System.out.println("Computer will start.");
+            System.out.println(board.toString(pocket));
         }
-        int[][] moves = Board.moves(minMaxAgent.gameBoard.getBoard(),moveCard[0],moveCard[1]);
+        int[][] moves = Board.moves(board.getBoard(),moveCard[0],moveCard[1]);
         // false if it's human turn and true if it's computer turn
-        boolean turn = coinSide != 1;
+        boolean turn = randomInt != 1;
         while(moves[11][0] != 0){
             if(turn) {
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
                 System.out.println("----- Human turn ;) ----- ");
                 Scanner scn = new Scanner(System.in);  // Create a Scanner object
-                String strBoard = minMaxAgent.gameBoard.toString(pocket);
+                String strBoard = board.toString(pocket);
                 System.out.print(strBoard);
                 System.out.println("\nChoose your move:");
                 int decimalLetter = 65;
@@ -51,21 +51,21 @@ public class Main {
                 System.out.print("----> ");
                 int chooseMove = scn.nextLine().trim().toUpperCase().charAt(0);
                 int posMove = chooseMove - decimalLetter;
-                Board.moveCard(moveCard[0], moveCard[1], moves[posMove][0], moves[posMove][1], minMaxAgent.gameBoard.getBoard(), pocket, false);
+                Board.moveCard(moveCard[0], moveCard[1], moves[posMove][0], moves[posMove][1], board.getBoard(), pocket, false);
                 moveCard[0] = moves[posMove][0];
                 moveCard[1] = moves[posMove][1];
-                String sBoard= minMaxAgent.gameBoard.toString(pocket);
+                String sBoard= board.toString(pocket);
                 System.out.print(sBoard);
             }
             else{
                 System.out.println("----- Computer turn :$ ----- ");
-                int[] move = minMaxAgent.bestMove(moveCard[0],moveCard[1],pocket);
-                Board.moveCard(moveCard[0],moveCard[1],move[0],move[1], minMaxAgent.gameBoard.getBoard(),pocket,true);
+                int[] move = minMaxAgent.bestMove(moveCard[0],moveCard[1],pocket,board);
+                Board.moveCard(moveCard[0],moveCard[1],move[0],move[1], board.getBoard(),pocket,true);
                 moveCard[0] = move[0];
                 moveCard[1] = move[1];
             }
             turn = !turn;
-            moves = Board.moves(minMaxAgent.gameBoard.getBoard(),moveCard[0],moveCard[1]);
+            moves = Board.moves(board.getBoard(),moveCard[0],moveCard[1]);
         }
         int shieldWon = 0;
         for(int[] house : pocket.hand){
@@ -77,12 +77,12 @@ public class Main {
 
         }
         if(shieldWon >= 4){
-            String sBoard = minMaxAgent.gameBoard.toString(pocket);
+            String sBoard = board.toString(pocket);
             System.out.print(sBoard);
             System.out.println(" Computer Won ... try harder next time HA HA HA ;)");
         }
         else{
-            String sBoard = minMaxAgent.gameBoard.toString(pocket);
+            String sBoard = board.toString(pocket);
             System.out.print(sBoard);
             System.out.println(" YEaaaaH Human Won !!!!");
         }

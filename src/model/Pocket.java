@@ -1,37 +1,35 @@
 package model;
 
 public class Pocket {
-        public int[][] hand = new int[7][];
-        // number on member of every houses
-        public static final int[] HOUSESET = new int[] {2,3,4,5,6,7,8};
-        // 3 extras spaces for a shield, number of member of a house
-        // and number of member of each house in possession.
-        // ex: hand = [[],[],[],[],[],[],[],[],<-- houses info| rupture | general pocket info --->[],[],[],]
-        private static final int EXTRASETSPACE = 3;
-        // number of card available per house
-        public int[] nbAvailableCard = new int[] {2,3,4,5,6,7,8};
-        private int[] CARD_HAND_POS = {0,1,0,1,2,0,1,2,3,0,1,2,3,4,0,1,2,3,4,5,
-                0,1,2,3,4,5,6,0,1,2,3,4,5,6,7};
-        // this offset is use to find the position of house in the a array
-        private static final int OFFSETS = 2;
+    public int[][] hand = new int[7][];
+    // number on member of every houses
+    public static final int[] HOUSESET = new int[] {2,3,4,5,6,7,8};
+    // 3 extras spaces for a shield, number of member of a house
+    // and number of member of each house in possession.
+    // ex: hand = [[],[],[],[],[],[],[],[],<-- houses info| rupture | general pocket info --->[],[],[],]
+    private static final int EXTRASETSPACE = 3;
+    // number of card available per house
+    public int[] nbAvailableCard = new int[] {2,3,4,5,6,7,8};
+    private int[] CARD_HAND_POS = {0,1,0,1,2,0,1,2,3,0,1,2,3,4,0,1,2,3,4,5,
+            0,1,2,3,4,5,6,0,1,2,3,4,5,6,7};
+    // this offset is use to find the position of house in the a array
+    private static final int OFFSETS = 2;
 
-        public Pocket(int[][] hand, int[] nbAvailableCard) {
-            int[][] pocketCopy =  new int[7][];
-            int i = 0;
-            for(int[] row : hand){
-                int [] rowCopy =  row.clone();
-                pocketCopy[i++] = rowCopy;
-            }
-            this.hand = pocketCopy;
-            System.arraycopy(nbAvailableCard,0,this.nbAvailableCard,0,7);
-
+    public Pocket(int[][] hand, int[] nbAvailableCard) {
+        int[][] pocketCopy =  new int[7][];
+        int i = 0;
+        for(int[] row : hand){
+            int [] rowCopy =  row.clone();
+            pocketCopy[i++] = rowCopy;
         }
+        this.hand = pocketCopy;
+        System.arraycopy(nbAvailableCard,0,this.nbAvailableCard,0,7);
 
-        public Pocket() {
-            initiatePocketSpace();
-        }
+    }
 
-
+    public Pocket() {
+        initiatePocketSpace();
+    }
 
 
     public void initiatePocketSpace(){
@@ -87,9 +85,13 @@ public class Pocket {
         }else {
             hand[cardHouseIndex][HAS_SHIELD] = addCardsToHand ? 1 : 0;
         }
-
-
     }
 
+    public void setHand(int[][] hand) {
+        this.hand = hand;
+    }
 
+    public void setNbAvailableCard(int[] nbAvailableCard) {
+        this.nbAvailableCard = nbAvailableCard;
+    }
 }

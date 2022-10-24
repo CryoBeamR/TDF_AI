@@ -7,10 +7,7 @@ public class Board {
     public static final int SIZE = 6;
     private static final int EMPTY_SPACE = 0;
     private int[][] board;
-    private int COMPANIONS = 6;
-    private final int HOUSESIZE = 8;
     //exclude the moving card ( identified by -1 )
-    private final int CARDSIZE = 35;
     private final static  int[] MAP_CARD_HOUSE = {2,2,3,3,3,4,4,4,4,5,5,5,5,5,6,6,6,6,6,6,7,7,7,7,7,7,7,8,8,8,8,8,8,8,8};
 
 
@@ -26,6 +23,16 @@ public class Board {
      * @return  a copy of the board array
      **/
     public int[][] deepCopyBoard(){
+       return deepCopyBoard(board);
+    }
+
+    /**
+     * Deep copy a board.
+     *
+     * @param board the board that will be deep copied
+     * @return the new board
+     */
+    public static int[][] deepCopyBoard(int[][] board){
         int[][] boardCopy =  new int[SIZE][SIZE];
         int i = 0;
         for(int[] row : board){
@@ -64,6 +71,7 @@ public class Board {
      * @param x point on x axe
      * @param y point on y axe
      * @param board the board that the action will be execute on
+     * @return int[] of grabbed cards
     **/
     public static int[] grabCard(int init_x, int init_y, int x, int y, int[][] board){
         int pos_x = init_x;
@@ -180,21 +188,8 @@ public class Board {
         }
         return moves;
     }
-
-    /**
-     * Deep copy a board.
-     *
-     * @param board the board that will be deep copied
-     * @return the new board
-     */
-    public int[][] deepCopyBoard(int[][] board){
-        int[][] boardCopy =  new int[SIZE][SIZE];
-        int i = 0;
-        for(int[] row : board){
-            int [] rowCopy =  row.clone();
-            boardCopy[i++] = rowCopy;
-        }
-        return boardCopy;
+    public int[] shuffleBoardCards(){
+        return shuffleBoardCards(this.board);
     }
     public static int[] shuffleBoardCards(int[][] board){
 
