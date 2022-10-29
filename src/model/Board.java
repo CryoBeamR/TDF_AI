@@ -51,6 +51,8 @@ public class Board {
      * @param x point on x axe
      * @param y point on y axe
      * @param board the board that the action will be execute on
+     * @param pocket the pocket that will be modify
+     * @param updateHand if true will move card without updating the pocket
      * @return the board array with de deplacement made
      **/
     public static int[][] moveCard(int init_x, int init_y, int x, int y, int[][] board,
@@ -155,7 +157,7 @@ public class Board {
 
 
     /**
-     * Find all the possible move by using moves_x and moves_y at a position
+     * Find all the possible move by using moves_axe on 2D axes at a position
      * (x,y)
      * NOTE :
      *  moves[10][1] is 1 = shield and 0 = no shield
