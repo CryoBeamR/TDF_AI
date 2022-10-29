@@ -5,7 +5,7 @@ import model.Pocket;
 
 
 public class MinMaxAgent {
-    private final int  DEPT = 9;
+    private static final int  DEPT = 9;
 
     /**
      * Find the best move depending of the heuristic of every board position
@@ -94,7 +94,7 @@ public class MinMaxAgent {
      */
     public double evaluation(int[][] pocket, int[] availableCard, int[][] moves){
         final int MAXSCORE = 10000;
-        final float OFFENSIVE_RATIO = 0.25f;
+        final float OFFENSIVE_RATIO = 0.15f;
         final float DEFENSIVE_RATIO = 1 - OFFENSIVE_RATIO;
         double score = 0;
         int numberShield = 0;
