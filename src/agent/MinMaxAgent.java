@@ -37,51 +37,31 @@ public class MinMaxAgent {
     }
 
     public double minMax(int[][] board,int[][] pocket,int[] availableCard, int depth , double alpha, double beta, boolean isMax, int x, int y, int currentDepth) {
-        double maxEval = -10000;
-        double minEval = 10000;
+        double pruneEval = isMax ? -10000 : 10000;
         if (depth == 0) {
             int[][] moves = Board.moves(board,x,y);
             return this.evaluation(pocket, availableCard, moves);
         }
         int[][] moves = Board.moves(board,x,y);
         Pocket pkt = new Pocket(pocket,availableCard);
-        if (isMax) {
-            for (int[] move : moves) {
-                int[][] boardCopy = Board.deepCopyBoard(board);
-                if (move[0] == -1){
-                    break;
-                }
-                int[][] tempBoard = Board.moveCard(x,y,move[0],move[1],boardCopy,pkt,true);
-                double eval = minMax(tempBoard, pkt.hand, pkt.nbAvailableCard, depth - 1, alpha, beta, false,move[0],move[1], currentDepth + 1);
-                maxEval = Math.max(maxEval, eval);
-                alpha = Math.max(alpha, maxEval);
-                if (beta <= alpha) {
-                    break;
-                }
+        for (int[] move : moves) {
+            int[][] boardCopy = Board.deepCopyBoard(board);
+            if (move[0] == -1){
+                break;
             }
-            if(moves[11][0] == 0){
-                return this.evaluation(pocket, availableCard, moves);
+            int[][] tempBoard = Board.moveCard(x,y,move[0],move[1],boardCopy,pkt,isMax);
+            double eval = minMax(tempBoard, pkt.hand, pkt.nbAvailableCard, depth - 1, alpha, beta, !isMax, move[0], move[1], ++currentDepth );
+            pruneEval = isMax ? Math.max(pruneEval, eval) : Math.min(pruneEval, eval);
+            alpha = isMax ? Math.max(alpha, pruneEval) : alpha;
+            beta = isMax ? beta : Math.min(beta, pruneEval);
+            if (beta <= alpha) {
+                break;
             }
-            return maxEval;
-        } else {
-            for (int[] move : moves) {
-                int[][] boardCopy = Board.deepCopyBoard(board);
-                if (move[0] == -1){
-                    break;
-                }
-                int[][] tempBoard = Board.moveCard(x,y,move[0],move[1],boardCopy,pkt,false);
-                double eval = minMax(tempBoard, pkt.hand, pkt.nbAvailableCard, depth - 1, alpha, beta, true,move[0],move[1],currentDepth + 1);
-                minEval = Math.min(minEval, eval);
-                beta = Math.min(beta, minEval);
-                if (beta <= alpha) {
-                    break;
-                }
-            }
-            if(moves[11][0] == 0){
-                return this.evaluation(pocket, availableCard, moves);
-            }
-            return minEval;
         }
+        if(moves[11][0] == 0){
+            return this.evaluation(pocket, availableCard, moves);
+        }
+        return pruneEval;
     }
 
     /**
