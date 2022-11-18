@@ -4,9 +4,11 @@ import model.Pocket;
 
 import java.util.Scanner;
 
-public class Main {
+public class Game {
+    static final int H_WON = 0;
+    static final int C_WON = 1;
 
-    public static void main(String[] arg){
+    public static int run(){
         int[][] genericBoard = {
                 {1,2,3,4,5,6},
                 {12,11,10,9,8,7},
@@ -17,20 +19,21 @@ public class Main {
         };
         Board board = new Board(genericBoard);
         int[] moveCard = board.shuffleBoardCards();
-        MinMaxAgent minMaxAgent = new MinMaxAgent();
         Pocket pocket = new Pocket();
+        startRounds(randStater(),board,moveCard,pocket);
+        return endRounds(board,pocket);
 
-        double randDouble =  Math.random()*2 ;
-        int randomInt = (int) randDouble;
-        if(randomInt == 1){
+    }
+
+    public static void startRounds(boolean starter, Board board, int[] moveCard, Pocket pocket){
+        MinMaxAgent minMaxAgent = new MinMaxAgent();
+        int[][] moves = Board.moves(board.getBoard(),moveCard[0],moveCard[1]);
+        if(!starter){
             System.out.println("Computer will start.");
             System.out.println(board.toString(pocket));
         }
-        int[][] moves = Board.moves(board.getBoard(),moveCard[0],moveCard[1]);
-        // false if it's human turn and true if it's computer turn
-        boolean turn = randomInt != 1;
         while(moves[11][0] != 0){
-            if(turn) {
+            if(starter) {
                 System.out.print("\033[H\033[2J");
                 System.out.flush();
                 System.out.println("----- Human turn ;) ----- ");
@@ -64,9 +67,19 @@ public class Main {
                 moveCard[0] = move[0];
                 moveCard[1] = move[1];
             }
-            turn = !turn;
+            starter = !starter;
             moves = Board.moves(board.getBoard(),moveCard[0],moveCard[1]);
         }
+    }
+
+    public static boolean randStater(){
+        double randDouble =  Math.random()*2 ;
+        int randomInt = (int) randDouble;
+        // false if it's human turn and true if it's computer turn
+        return randomInt != 1;
+
+    }
+    public static int endRounds(Board board, Pocket pocket){
         int shieldWon = 0;
         for(int[] house : pocket.hand){
             int shieldPos = house.length -1;
@@ -74,21 +87,21 @@ public class Main {
             if(house[shieldPos] == 1){
                 shieldWon++;
             }
-
         }
         if(shieldWon >= 4){
             String sBoard = board.toString(pocket);
             System.out.print(sBoard);
             System.out.println(" Computer Won ... try harder next time HA HA HA ;)");
+            return C_WON;
         }
         else{
             String sBoard = board.toString(pocket);
             System.out.print(sBoard);
             System.out.println(" YEaaaaH Human Won !!!!");
+            return H_WON;
         }
-
-
     }
-
-
+    public static void main(String[] arg){
+        Game.run();
+    }
 }
