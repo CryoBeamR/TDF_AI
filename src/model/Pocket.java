@@ -1,7 +1,7 @@
 package model;
 
 public class Pocket {
-    public int[][] hand = new int[7][];
+    private int[][] hand = new int[7][];
     // number on member of every houses
     public static final int[] HOUSESET = new int[] {2,3,4,5,6,7,8};
     // 3 extras spaces for a shield, number of member of a house
@@ -10,9 +10,9 @@ public class Pocket {
     private static final int EXTRASETSPACE = 3;
     // number of card available per house
     public int[] nbAvailableCard = new int[] {2,3,4,5,6,7,8};
-    private int[] CARD_HAND_POS = {0,1,0,1,2,0,1,2,3,0,1,2,3,4,0,1,2,3,4,5,
+    private final int[] CARD_HAND_POS = {0,1,0,1,2,0,1,2,3,0,1,2,3,4,0,1,2,3,4,5,
             0,1,2,3,4,5,6,0,1,2,3,4,5,6,7};
-    // this offset is use to find the position of house in the a array
+    // this offset is used to find the position of house in the array
     private static final int OFFSETS = 2;
 
     public Pocket(int[][] hand, int[] nbAvailableCard) {
@@ -32,7 +32,7 @@ public class Pocket {
     }
 
 
-    public void initiatePocketSpace(){
+    private void initiatePocketSpace(){
         int i = 0;
         for(int numberCardHouseSet : HOUSESET){
             hand[i] = new int[numberCardHouseSet + EXTRASETSPACE];
@@ -90,6 +90,8 @@ public class Pocket {
     public void setHand(int[][] hand) {
         this.hand = hand;
     }
+
+    public int[][] getHand() {return hand;}
 
     public void setNbAvailableCard(int[] nbAvailableCard) {
         this.nbAvailableCard = nbAvailableCard;

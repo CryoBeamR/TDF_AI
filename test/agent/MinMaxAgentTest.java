@@ -1,6 +1,5 @@
+package agent;
 
-
-import agent.MinMaxAgent;
 import model.Board;
 import model.Pocket;
 import org.junit.jupiter.api.Test;
