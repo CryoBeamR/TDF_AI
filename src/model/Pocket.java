@@ -10,9 +10,9 @@ public class Pocket {
     private static final int EXTRASETSPACE = 3;
     // number of card available per house
     public int[] nbAvailableCard = new int[] {2,3,4,5,6,7,8};
-    private int[] CARD_HAND_POS = {0,1,0,1,2,0,1,2,3,0,1,2,3,4,0,1,2,3,4,5,
+    private final int[] CARD_HAND_POS = {0,1,0,1,2,0,1,2,3,0,1,2,3,4,0,1,2,3,4,5,
             0,1,2,3,4,5,6,0,1,2,3,4,5,6,7};
-    // this offset is use to find the position of house in the a array
+    // this offset is used to find the position of house in the array
     private static final int OFFSETS = 2;
 
     public Pocket(int[][] hand, int[] nbAvailableCard) {

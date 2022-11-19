@@ -8,7 +8,7 @@ public class MinMaxAgent {
     private static final int  DEPT = 9;
 
     /**
-     * Find the best move depending of the heuristic of every board position
+     * Find the best move depending on the heuristic of every board position
      * it encounter.
      *
      * @param x the initial position of the moving card on axe x
@@ -73,13 +73,13 @@ public class MinMaxAgent {
      * @return A score between 10000 and -10000
      */
     public double evaluation(int[][] pocket, int[] availableCard, int[][] moves){
-        final int MAXSCORE = 10000;
+        final int MAX_SCORE = 10000;
         final float OFFENSIVE_RATIO = 0.15f;
         final float DEFENSIVE_RATIO = 1 - OFFENSIVE_RATIO;
         double score = 0;
         int numberShield = 0;
         int currentHouse = 2;
-        // Target number of card needed to have majority
+        // Target number of card needed of each house to have majority
         int[] targetCardsNumber = {2,2,3,3,4,4,5};
 
         for(int[] houseHand : pocket){
@@ -96,16 +96,16 @@ public class MinMaxAgent {
 
             if( isHouseBadgeAvailable){
                 boolean hasMajorityOfHouseCards = (float)(houseHand[nbCardHousePocketIndex]) / currentHouse > 0.50f;
-                //Give points if has majority of house cards or was the last to equalize
+                //Give points if it has the majority of house cards or was the last to equalize
                 if( hasMajorityOfHouseCards || hasBadgeWhenNoCardAvailable){
-                    score += ((MAXSCORE * DEFENSIVE_RATIO)/8 );
+                    score += ((MAX_SCORE * DEFENSIVE_RATIO)/8 );
                 }
                 else{
                     float cardsByTarget= (float) houseHand[nbCardHousePocketIndex]/(targetCardsNumber[houseIndex]);
-                    score += ((MAXSCORE * OFFENSIVE_RATIO)/8)*cardsByTarget ;
+                    score += ((MAX_SCORE * OFFENSIVE_RATIO)/8)*cardsByTarget ;
                 }
             } else{
-                score -= ((MAXSCORE * DEFENSIVE_RATIO)/8 );
+                score -= ((MAX_SCORE * DEFENSIVE_RATIO)/8 );
             }
             if(houseHand[badgeIndex] == 1 ){
                 numberShield++;
@@ -115,10 +115,10 @@ public class MinMaxAgent {
         }
         if(moves[11][0] == 0){
             if (numberShield >= 4){
-                return MAXSCORE;
+                return MAX_SCORE;
             }
             else{
-                return MAXSCORE * -1;
+                return MAX_SCORE * -1;
             }
         }
 

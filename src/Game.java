@@ -21,7 +21,7 @@ public class Game {
         int[] moveCard = board.shuffleBoardCards();
         Pocket pocket = new Pocket();
         startRounds(randStater(),board,moveCard,pocket);
-        return endRounds(board,pocket);
+        return results(board,pocket);
 
     }
 
@@ -37,7 +37,7 @@ public class Game {
                 System.out.print("\033[H\033[2J");
                 System.out.flush();
                 System.out.println("----- Human turn ;) ----- ");
-                Scanner scn = new Scanner(System.in);  // Create a Scanner object
+                Scanner scn = new Scanner(System.in);
                 String strBoard = board.toString(pocket);
                 System.out.print(strBoard);
                 System.out.println("\nChoose your move:");
@@ -79,7 +79,7 @@ public class Game {
         return randomInt != 1;
 
     }
-    public static int endRounds(Board board, Pocket pocket){
+    public static int results(Board board, Pocket pocket){
         int shieldWon = 0;
         for(int[] house : pocket.hand){
             int shieldPos = house.length -1;
@@ -88,15 +88,13 @@ public class Game {
                 shieldWon++;
             }
         }
+        String sBoard = board.toString(pocket);
+        System.out.print(sBoard);
         if(shieldWon >= 4){
-            String sBoard = board.toString(pocket);
-            System.out.print(sBoard);
             System.out.println(" Computer Won ... try harder next time HA HA HA ;)");
             return C_WON;
         }
         else{
-            String sBoard = board.toString(pocket);
-            System.out.print(sBoard);
             System.out.println(" YEaaaaH Human Won !!!!");
             return H_WON;
         }

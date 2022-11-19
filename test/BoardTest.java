@@ -42,10 +42,10 @@ class BoardTest {
     @Test
     void findHouse() {
         // number of card
-        final int  MAXCARD = 36;
+        final int  MAX_CARD = 36;
         int[] expectedHouse = {2,2,3,3,3,4,4,4,4,5,5,5,5,5,6,6,6,6,6,6,
         7,7,7,7,7,7,7,8,8,8,8,8,8,8,8};
-        for(int i = 1; i < MAXCARD;i++){
+        for(int i = 1; i < MAX_CARD;i++){
             int house = Board.findHouse(i);
             assertEquals(expectedHouse[i-1],house);
         }

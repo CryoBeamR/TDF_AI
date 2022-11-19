@@ -72,7 +72,7 @@ public class Board {
      * @param init_y initial point on y axe of movement card
      * @param x point on x axe
      * @param y point on y axe
-     * @param board the board that the action will be execute on
+     * @param board the board that the action will be executed on
      * @return int[] of grabbed cards
     **/
     public static int[] grabCard(int init_x, int init_y, int x, int y, int[][] board){
@@ -100,7 +100,7 @@ public class Board {
     }
 
     /**
-     * Find the house of a card depending of it's value
+     * Find the house of a card depending on it's value
      *
      * @param card the card number between 1 and 35
      * @return the house of the card
@@ -117,7 +117,7 @@ public class Board {
     /**
      * Find availaible move on axe x or y
      *
-     * @param board the board that requied the evaluation
+     * @param board the board that required the evaluation
      * @param x position on x axe of the moving card
      * @param y position on y axe of the moving card
      * @param axe 0 for x axe and 1 for y axe
@@ -163,7 +163,7 @@ public class Board {
      *  moves[10][1] is 1 = shield and 0 = no shield
      *  moves[11][1] nb of moves in the array
      *
-     * @param board the board that requied the evaluation
+     * @param board the board that required the evaluation
      * @param x position on x axe of the moving card
      * @param y position on y axe of the moving card
      * @return  a 2D array of all possible position
@@ -284,7 +284,7 @@ public class Board {
             if(hand[5-i][9-i] == 1)
                 board.append(board.append(String.format("%" + c_space + ".3s", "✓\n")));
             else
-                board.append(String.format("%" + c_space + ".3s", "×\n"));;
+                board.append(String.format("%" + c_space + ".3s", "×\n"));
         }
 
 
