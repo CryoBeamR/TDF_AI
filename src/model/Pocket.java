@@ -1,7 +1,7 @@
 package model;
 
 public class Pocket {
-    public int[][] hand = new int[7][];
+    private int[][] hand = new int[7][];
     // number on member of every houses
     public static final int[] HOUSESET = new int[] {2,3,4,5,6,7,8};
     // 3 extras spaces for a shield, number of member of a house
@@ -32,7 +32,7 @@ public class Pocket {
     }
 
 
-    public void initiatePocketSpace(){
+    private void initiatePocketSpace(){
         int i = 0;
         for(int numberCardHouseSet : HOUSESET){
             hand[i] = new int[numberCardHouseSet + EXTRASETSPACE];
@@ -90,6 +90,8 @@ public class Pocket {
     public void setHand(int[][] hand) {
         this.hand = hand;
     }
+
+    public int[][] getHand() {return hand;}
 
     public void setNbAvailableCard(int[] nbAvailableCard) {
         this.nbAvailableCard = nbAvailableCard;

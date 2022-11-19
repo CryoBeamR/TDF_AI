@@ -8,7 +8,7 @@ public class Game {
     static final int H_WON = 0;
     static final int C_WON = 1;
 
-    public static int run(){
+    public static void run(){
         int[][] genericBoard = {
                 {1,2,3,4,5,6},
                 {12,11,10,9,8,7},
@@ -21,7 +21,7 @@ public class Game {
         int[] moveCard = board.shuffleBoardCards();
         Pocket pocket = new Pocket();
         startRounds(randStater(),board,moveCard,pocket);
-        return results(board,pocket);
+        results(board,pocket);
 
     }
 
@@ -81,7 +81,7 @@ public class Game {
     }
     public static int results(Board board, Pocket pocket){
         int shieldWon = 0;
-        for(int[] house : pocket.hand){
+        for(int[] house : pocket.getHand()){
             int shieldPos = house.length -1;
 
             if(house[shieldPos] == 1){

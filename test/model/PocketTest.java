@@ -1,7 +1,6 @@
+package model;
 
 
-import model.Board;
-import model.Pocket;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,7 +19,7 @@ class PocketTest {
                 {8,0,0,0,0,0,0,0,0,0,0}
         };
         Pocket pocket = new Pocket();
-        assertArrayEquals(pocket.hand,expectedPocket);
+        assertArrayEquals(pocket.getHand(),expectedPocket);
     }
 
     @Test

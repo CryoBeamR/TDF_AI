@@ -1,6 +1,5 @@
+package model;
 
-import model.Board;
-import model.Pocket;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -32,7 +31,7 @@ class BoardTest {
 
         // check alterability of the copy
         boardCopy[4][3] = 0;
-        assertFalse(Arrays.equals(boardCopy, boardArray));
+        assertFalse(Arrays.deepEquals(boardCopy, boardArray));
 
 
 
@@ -71,9 +70,8 @@ class BoardTest {
                 {-1,24,13,33,1,31}
         };
 
-        Board board = new Board(boardArray);
-        int[] movedBoard =  board.grabCard(0,5,0,0, boardArray);
 
+        Board.grabCard(0,5,0,0, boardArray);
         assertArrayEquals(expectedBoardArray,boardArray);
     }
 
@@ -240,5 +238,45 @@ class BoardTest {
         int[][] moves3 =  Board.moves_axe(boardArray5,2,5,1);
 
         assertArrayEquals(expectedMoves5,moves3);
+    }
+
+    @Test
+    void deductOppositePocket() {
+        Pocket pocket = new Pocket();
+        int[][] boardArray = {
+                {0,0,0,0,0,0},
+                {0,0,0,0,0,0},
+                {0,-1,24,0,8,0},
+                {0,0,0,0,0,0},
+                {0,0,0,0,0,0},
+                {0,0,0,0,0,0}
+        };
+        Board board = new Board(boardArray);
+        int[][] hand = {
+                {2,1,0,1,1},
+                {3,0,0,0,0,0},
+                {4,6,0,0,0,1,0},
+                {5,10,11,0,13,14,4,1},
+                {6,15,16,17,0,0,0,3,0},
+                {7,0,0,0,0,0,26,0,1,0},
+                {8,28,29,30,31,32,33,34,35,8,1}
+        };
+        int[][] expectedHand = {
+                {2, 0, 2, 1, 0},
+                {3, 3, 4, 5, 3, 1},
+                {4, 0, 7, 0, 9, 2, 1},
+                {5, 0, 0, 12, 0, 0, 1, 0},
+                {6, 0, 0, 0, 18, 19, 20, 3, 1},
+                {7, 21, 22, 23, 0, 25, 0, 27, 5, 1},
+                {8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+        };
+        int[] cardAvailable = {0,0,1,0,0,1,0};
+        pocket.setHand(hand);
+        pocket.setNbAvailableCard(cardAvailable);
+
+        Pocket oppositePocket = Board.deductOppositePocket(pocket,board);
+
+        assertArrayEquals(expectedHand,oppositePocket.getHand());
+
     }
 }
